@@ -1,41 +1,31 @@
-import { useMemo, useState } from 'react';
+import { useEffect, useState } from 'react';
 import PostFilter from './components/PostFilter';
 import PostForm from './components/PostForm';
 import PostList from './components/PostList';
 import MyButton from './components/UI/button/MyButton';
 import MyModal from './components/UI/modal/MyModal';
+import { usePosts } from './hooks/usePosts';
 import { IPostItem } from './models';
 import './styles/App.css';
+import PostService from './api/PostService';
+import Loader from './components/UI/loader/Loader';
+import { useFetch } from './hooks/useFetch';
 
 function App() {
 
-  const [posts, setPosts] = useState([
-    { id: 1, title: 'JS', body: 'good' },
-    { id: 2, title: 'TS', body: 'very good' },
-    { id: 3, title: 'Java', body: 'oops' },
-  ])
-  //Contolled component
-  // const[title, setTitle] = useState('');
-  // const[body, setBody] = useState('');
-
+  const [posts, setPosts] = useState<IPostItem[]>([]);
   const [filter, setFilter] = useState({ sort: '', query: '' });
-  const [visible, setVisible] = useState(false);
+  const [visible, setVisible] = useState<boolean>(false);
 
-  const sortedPosts: IPostItem[] = useMemo(() => {
-    if (filter.sort) {
-      return [...posts].sort((a, b) => a[filter.sort].localeCompare(b[filter.sort]));
-    } else {
-      return posts;
-    }
-  }, [filter.sort, posts]);
+  const sortedAndSearchedPosts = usePosts(posts, filter.query, filter.sort);
 
-  const sortedAndSearchedPosts = useMemo(() => {
-    switch (filter.sort) {
-      case "title": return sortedPosts.filter(post => post.title.toLocaleLowerCase().includes(filter.query.toLocaleLowerCase()));
-      case "body": return sortedPosts.filter(post => post.body.toLocaleLowerCase().includes(filter.query.toLocaleLowerCase()));
-      default: return sortedPosts;
-    }
-  }, [filter.query, sortedPosts])
+  const [fetchPosts, isLoading, errorMessage] = useFetch(async () => {
+    setPosts(await PostService.getAllPosts()); 
+  });
+
+  useEffect(() => {
+    fetchPosts() ;  
+  }, [])
 
   const createPost = (newPost: IPostItem) => {
     setPosts([...posts, newPost]);
@@ -48,15 +38,22 @@ function App() {
 
   return (
     <div className="App">
-      <MyButton style={{marginTop: '30px'}} onClick={() => setVisible(true)}>Add Post</MyButton>
-      <MyModal visible={visible}>
+      <MyButton style={{ marginTop: '30px' }} onClick={() => setVisible(true)}>Add Post</MyButton>
+      <MyModal visible={visible} setVisible={(visible) => setVisible(visible)}>
         <PostForm create={createPost} />
       </MyModal>
       <hr style={{ margin: "15px 0" }} />
       <PostFilter filter={filter} setFilter={setFilter} />
-
-      <PostList remove={removePost} posts={sortedAndSearchedPosts} title='JS List' />
-
+      {
+        errorMessage.toString() &&
+        <h1>{errorMessage.toString()}</h1>
+      }
+      {
+        isLoading
+        ? <Loader/>
+        : <PostList remove={removePost} posts={sortedAndSearchedPosts} title='JS List' />
+      }
+      
     </div>
   )
 }

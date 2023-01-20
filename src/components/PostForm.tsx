@@ -1,13 +1,13 @@
-import React, { useState } from 'react'
+import React, { FC, useState } from 'react'
 import { IPostItem } from '../models';
 import MyButton from './UI/button/MyButton'
 import { MyInput } from './UI/input/MyInput'
 
-interface PostFormProps {
+type PostFormProps = {
     create: (post: IPostItem) => void;
 }
 
-const PostForm = ({create}: PostFormProps) => {
+const PostForm: FC<PostFormProps> = ({ create }) => {
     const [post, setPost] = useState<{ title: string, body: string }>({ title: '', body: '' });
 
     const addNewPost = async (event: React.FormEvent) => {

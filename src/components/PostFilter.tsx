@@ -1,5 +1,4 @@
-import React, { useMemo, useState } from 'react';
-import { IPostItem } from '../models';
+import { FC, useState } from 'react';
 import { MyInput } from './UI/input/MyInput';
 import MySelect from './UI/select/MySelect';
 
@@ -8,12 +7,12 @@ type Filter = {
     query: string;
 }
 
-interface PostFilterProps {
+type PostFilterProps = {
     filter: Filter;
     setFilter: (filter: Filter) => void;
 }
 
-const PostFilter = ({ filter, setFilter }: PostFilterProps) => {
+const PostFilter: FC<PostFilterProps> = ({ filter, setFilter }) => {
 
     const [inputState, setInputState] = useState(true);
 

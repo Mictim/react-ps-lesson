@@ -1,14 +1,15 @@
-import { IPostItem, IPostList } from "../models";
+import { IPostItem } from "../models";
 import PostItem from "./PostItem";
+import { TransitionGroup, CSSTransition } from "react-transition-group";
+import { FC } from "react";
 
-interface PostListProps {
+type PostListProps = {
     posts: IPostItem[];
     title: string;
     remove: (post: IPostItem) => void
 }
 
-
-const PostList = ({ posts, title, remove }: PostListProps) => {
+const PostList: FC<PostListProps> = ({ posts, title, remove }) => {
 
     if (!posts.length) {
         return <h1 style={{ textAlign: "center" }}>There is no any post here!</h1>
@@ -19,9 +20,18 @@ const PostList = ({ posts, title, remove }: PostListProps) => {
             <h1 style={{ textAlign: 'center' }}>
                 {title}
             </h1>
-            {posts.map((post: IPostItem, index: number) =>
-                <PostItem remove={remove} number={index + 1} post={post} key={post.id} />
-            )}
+            <TransitionGroup>
+                {posts.map((post: IPostItem, index: number) =>
+                    <CSSTransition
+                        key={post.id}
+                        timeout={500}
+                        classNames="post"
+                    >
+                        <PostItem remove={remove} number={index + 1} post={post} />
+                    </CSSTransition>
+                )}
+            </TransitionGroup>
+
         </div>
     )
 }

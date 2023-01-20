@@ -1,6 +1,6 @@
-import React from 'react'
+import { FC } from 'react'
 
-interface MyButtonProps {
+type MyButtonProps = {
     options: {
         name: string;
         value: string;
@@ -10,11 +10,11 @@ interface MyButtonProps {
     onChange: (event: any) => void;
 }
 
-const MySelect = ({ options, defaultValue, value, onChange }: MyButtonProps) => {
+const MySelect: FC<MyButtonProps> = ({ options, defaultValue, value, onChange }) => {
     return (
         <div>
             <select value={value} onChange={event => onChange(event.target.value)}>
-                <option  disabled value="">{defaultValue}</option>
+                <option disabled value="">{defaultValue}</option>
                 {options.map(option =>
                     <option key={option.value} value={option.value}>{option.name}</option>)}
 

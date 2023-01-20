@@ -1,13 +1,14 @@
+import { FC } from "react";
 import { IPostItem } from "../models"
 import MyButton from "./UI/button/MyButton";
 
-interface PostItemProps {
+type PostItemProps = {
   number: number;
   post: IPostItem;
   remove: (post: IPostItem) => void;
 }
 
-const PostItem = ({ number, post, remove }: PostItemProps) => {
+const PostItem: FC<PostItemProps> = ({ number, post, remove }) => {
 
   return (
     <div className="post">
